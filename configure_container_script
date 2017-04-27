@@ -1,0 +1,72 @@
+#!/bin/bash
+
+
+rootpwd=__ROOTPWD
+username=__USERNAME
+uid=__USRID
+gid=__GRPID
+
+
+# prepare root
+echo "prepare root"
+echo "root:$rootpwd" | chpasswd
+
+
+
+# prepare the developer user (and Xserver redirection)
+mkdir -p /home/${username}
+mkdir -p /home/${username}/share
+mkdir -p /etc/sudoers.d
+echo "${username}:x:${uid}:${gid}:Developer,,,:/home/${username}:/bin/bash" >> /etc/passwd
+echo "${username}:x:${uid}:" >> /etc/group
+echo "${username} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${username}
+chmod 0440 /etc/sudoers.d/${username}
+chown ${uid}:${gid} /home/${username}
+echo "${username}:$rootpwd" | chpasswd
+
+
+
+
+# install ssh user key
+echo "install ssh user key"
+mkdir -p /home/${username}/.ssh
+
+file_name=/root/share-out/${username}_id_rsa.pub
+if [ -f "$file_name" ]
+then
+	cat $file_name >> /home/${username}/.ssh/authorized_keys
+fi
+
+
+sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+
+
+
+
+# hotfix the locales for bare docker bash
+echo "LC_ALL=en_US.UTF-8
+LANG=en_US.UTF-8" >> /etc/environment
+
+
+
+
+
+
+
+# install hol-mode
+echo "(load \"/opt/HOL/tools/hol-mode\")
+;(load \"/opt/HOL/tools/hol-unicode.el\")
+
+(defun my-sml-mode-hook ()
+  \"Local defaults for SML mode\"
+  (setq electric-indent-chars '()))
+
+(add-hook 'sml-mode-hook 'my-sml-mode-hook)
+" > /home/${username}/.emacs
+
+
+
+# install ml-mode
+#RUN cd /root && echo "(package-install \"sml-mode\")" > install_sml.el && emacs --script install_sml.el
+# >M-x< package-install >RET< sml-mode >RET<
