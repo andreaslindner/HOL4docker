@@ -11,8 +11,8 @@ WITHXSERVER=$5
 
 
 # stop and remove container (just in case it exists)
-docker container stop $DOCKERCONTAINER
-docker container rm $DOCKERCONTAINER
+sudo docker container stop $DOCKERCONTAINER
+sudo docker container rm $DOCKERCONTAINER
 
 # create container from image
 if [ $WITHXSERVER != "0" ]
@@ -20,9 +20,9 @@ then
 	XSERVERMAPPINGS="-e DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $HOME/.Xauthority:/home/$USERNAME/.Xauthority"
 fi
 
-docker container create -p 127.0.0.1:9922:22 -v $(pwd)/out:/root/share-out -v $SHARETARGET:/home/$USERNAME/share -w /home/$USERNAME $XSERVERMAPPINGS --pid=host --ipc=host --name $DOCKERCONTAINER $DOCKERIMAGE
+sudo docker container create -p 127.0.0.1:9922:22 -v $(pwd)/out:/root/share-out -v $SHARETARGET:/home/$USERNAME/share -w /home/$USERNAME $XSERVERMAPPINGS --pid=host --ipc=host --name $DOCKERCONTAINER $DOCKERIMAGE
 
-docker container start $DOCKERCONTAINER
+sudo docker container start $DOCKERCONTAINER
 
 
 
@@ -51,7 +51,7 @@ fi
 
 
 
-docker container exec -ti $DOCKERCONTAINER /bin/bash /root/share-out/configure_docker.sh
+sudo docker container exec -ti $DOCKERCONTAINER /bin/bash /root/share-out/configure_docker.sh
 
 
 
