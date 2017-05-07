@@ -55,7 +55,10 @@ LANG=en_US.UTF-8" >> /etc/environment
 
 
 # install hol-mode
-echo "(load \"/opt/HOL/tools/hol-mode\")
+echo "
+(cua-mode)
+
+(load \"/opt/HOL/tools/hol-mode\")
 ;(load \"/opt/HOL/tools/hol-unicode.el\")
 
 (defun my-sml-mode-hook ()

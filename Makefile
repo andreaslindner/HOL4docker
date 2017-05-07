@@ -5,14 +5,15 @@ imagename_build=holimg_build
 imagename_dohub=andreaslindner/hol4docker
 containername=holcontainer
 #sharetarget=$(shell pwd)/share
-sharetarget=$(HOME)
+#sharetarget=$(HOME)
+sharetarget=/NOBACKUP/projects/holcourse
 USERNAME=$(USER)
 
 # 0 for ssh, 1 for direct x server
 withxserver=1
 
 # 0 in case your user is in the group docker (then you have sufficient privilegies to run docker commands), 1 otherwise
-usesudo=1
+usesudo=0
 
 
 ifeq ($(usesudo),0)
@@ -45,12 +46,12 @@ pull:
 	# pull
 	$(dockerprefix) docker pull $(imagename_dohub)
 	echo $(imagename_dohub) > imagename
-	
 
 
 
 
-configure: configure_container.sh imagename
+
+configure: configure_container.sh configure_container_script imagename
 	rm -rf out
 	mkdir out
 	mkdir -p share
